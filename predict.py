@@ -27,7 +27,7 @@ top_k = parse_args.top_k
 nn_model = load_nn_checkpoint(checkpoint)
 
 # get categories
-cat_to_name = label_mapping('cat_to_name.json')
+cat_to_name = label_mapping(category_names)
 
 ps, labels = predict(image_path, nn_model, top_k)
 

@@ -32,10 +32,11 @@ file_name = parse_args.file_name
 # Load all the data and models
 dataloaders, image_datasets = load_data('./flowers')
 nn_model, criterion, optimizer = network_setup(
-    model, hidden_layers, learning_rate)
+    model, hidden_layers, learning_rate, device)
 
 nn_model.class_to_idx = image_datasets['training'].class_to_idx
 model_dict = {
+    'arch': 'vgg16',
     'epochs': epochs,
     'classifier': nn_model.classifier,
     'optimizer_state': optimizer.state_dict,
@@ -47,7 +48,7 @@ file_name = 'network_checkpoint.pth'
 # Time to train!
 start_time = time.time()
 print("Start: {}".format(start_time))
-train_network(nn_model, dataloaders, optimizer, epochs, 30)
+train_network(nn_model, dataloaders, optimizer, epochs, 30, device)
 
 # Save the network check point
 save_nn_checkpoint(model_dict, file_name)

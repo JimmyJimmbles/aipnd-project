@@ -17,7 +17,7 @@ import numpy as np
 import json
 
 # Global variables
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+device_check = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 criterion = nn.NLLLoss()
 
 
@@ -73,7 +73,7 @@ def label_mapping(file_name):
     return cat_to_name
 
 
-def network_setup(model='vgg16', hidden_layers=[2000, 500, 250], lr=0.001):
+def network_setup(model='vgg16', hidden_layers=[2000, 500, 250], lr=0.001, device='cpu'):
     if type(model) == type(None):
         print("No model was provided, defaulting to vgg16.")
         nn_model = models.vgg16(pretrained=True)
@@ -118,7 +118,7 @@ def network_setup(model='vgg16', hidden_layers=[2000, 500, 250], lr=0.001):
     return nn_model, criterion, optimizer
 
 
-def validation(model, dataloader, criterion):
+def validation(model, dataloader, criterion, device='cpu'):
     loss = 0
     accuracy = 0
 
@@ -141,7 +141,7 @@ def validation(model, dataloader, criterion):
     return loss, accuracy
 
 
-def train_network(nn_model, dataloaders, optimizer, epochs=5, print_every=30):
+def train_network(nn_model, dataloaders, optimizer, epochs=5, print_every=30, device='cpu'):
     steps = 0
 
     # get dataloaders
@@ -193,6 +193,7 @@ def save_nn_checkpoint(model_dict, file_name):
     """ Helper funciton to quickly save the nn """
 
     torch.save(model_dict, file_name)
+    print("Model has been saved as {}".format(file_name))
 
 
 def load_nn_checkpoint(filepath):
@@ -201,7 +202,8 @@ def load_nn_checkpoint(filepath):
     hidden_layers = [2000, 500, 250]
     lr = 0.001
 
-    nn_model, criterion, optimizer = network_setup('vgg16', hidden_layers, lr)
+    nn_model, criterion, optimizer = network_setup(
+        checkpoint['arch'], hidden_layers, lr)
 
     nn_model.load_state_dict(checkpoint['state_dict'])
 
